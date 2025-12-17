@@ -1,14 +1,38 @@
-from flask import Flask, request, render_template, send_file
+from flask import (
+    Flask,
+    request,
+    render_template,
+    send_file,
+    after_this_request
+)
 from sbox_core import generate_sbox
 from crypto_tests import *
 from encryption import *
 from export import export_to_excel
+
 import os
+import atexit
 
 app = Flask(__name__)
 
+# ================= CONFIG =================
 EXPORT_FILE = "aes_export.xlsx"
 
+# ================= CLEANUP FUNCTION =================
+def cleanup_export_file():
+    if os.path.exists(EXPORT_FILE):
+        try:
+            os.remove(EXPORT_FILE)
+        except Exception as e:
+            print("Cleanup error:", e)
+
+# Cleanup at app start (remove leftover file)
+cleanup_export_file()
+
+# Cleanup at normal app exit
+atexit.register(cleanup_export_file)
+
+# ================= ROUTES =================
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
@@ -20,24 +44,24 @@ def index():
         matrix = request.form["matrix"]
         plaintext = request.form["plaintext"]
 
-        # Generate S-box & AES key
+        # ---- Generate S-box & Key ----
         sbox = generate_sbox(matrix)
         key = generate_key()
 
-        # Prepare plaintext (1 AES block)
+        # ---- Prepare Plaintext (1 AES block) ----
         pt = plaintext.encode().ljust(16, b'\x00')
 
-        # Encrypt & decrypt with trace
+        # ---- Encrypt & Decrypt with Trace ----
         ciphertext, enc_trace = aes_encrypt_trace(pt, key, sbox)
         decrypted, dec_trace = aes_decrypt_trace(ciphertext, key, sbox)
 
-        # Build S-box table
+        # ---- Build S-box Table ----
         sbox_table = [
-            [f"{sbox[r*16 + c]:02X}" for c in range(16)]
+            [f"{sbox[r * 16 + c]:02X}" for c in range(16)]
             for r in range(16)
         ]
 
-        # Cryptographic tests
+        # ---- Cryptographic Tests ----
         crypto_result = {
             "NL": nonlinearity(sbox),
             "SAC": sac(sbox),
@@ -51,15 +75,16 @@ def index():
             "CI": correlation_immunity(sbox),
         }
 
+        # ---- Result Object ----
         result = {
             "Key": key.hex(),
             "Plaintext": plaintext,
             "Ciphertext": ciphertext.hex(),
-            "Decrypted": decrypted.rstrip(b'\x00').decode(errors="ignore"),
+            "Decrypted": decrypted.rstrip(b"\x00").decode(errors="ignore"),
             **crypto_result
         }
 
-        # Export to Excel
+        # ---- Export Excel (TEMP FILE) ----
         export_to_excel(
             filename=EXPORT_FILE,
             affine_matrix=matrix,
@@ -84,13 +109,23 @@ def index():
 
 @app.route("/download")
 def download_excel():
-    if os.path.exists(EXPORT_FILE):
-        return send_file(
-            EXPORT_FILE,
-            as_attachment=True,
-            download_name="AES_Affine_Sbox_Result.xlsx"
-        )
-    return "File not found", 404
+    if not os.path.exists(EXPORT_FILE):
+        return "File not found", 404
 
+    @after_this_request
+    def remove_file(response):
+        try:
+            os.remove(EXPORT_FILE)
+        except Exception as e:
+            print("Cleanup error:", e)
+        return response
+
+    return send_file(
+        EXPORT_FILE,
+        as_attachment=True,
+        download_name="AES_Affine_Sbox_Result.xlsx"
+    )
+
+# ================= MAIN =================
 if __name__ == "__main__":
     app.run(debug=True)
