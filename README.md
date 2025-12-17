@@ -19,7 +19,7 @@ project/
 
 ```
 
-## Instalasi
+## Instalation
 
 ### 1. Install Virtual Environtment
 
