@@ -1,35 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>S-box44 Cryptographic Analysis</title>
+    <meta charset="UTF-8">
+    <title>AES S-box Affine Matrix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        select, input, button { padding: 8px; margin: 5px 0; }
+        pre { background: #f4f4f4; padding: 15px; }
+    </style>
 </head>
 <body>
-    <h1>Pengujian Kriptografi S-box44</h1>
 
-    <h2>Modul 1 – 10 Pengujian S-box</h2>
-    <ul>
-        {% for k, v in results.items() %}
-            <li>{{ k }} : {{ v }}</li>
+<h2>AES S-box Affine Matrix Exploration</h2>
+
+<form method="post">
+    <label>Affine Matrix:</label><br>
+    <select name="matrix" required>
+        {% for k in matrices %}
+            <option value="{{ k }}">{{ k }}</option>
         {% endfor %}
-    </ul>
+    </select><br>
 
-    <hr>
+    <label>Plaintext:</label><br>
+    <input type="text" name="plaintext" placeholder="Masukkan plaintext" required><br>
 
-    <h2>Modul 2 – Enkripsi AES-like dengan S-box44</h2>
+    <button type="submit">Generate & Encrypt</button>
+</form>
 
-    <form method="POST">
-        <label>Plaintext:</label><br>
-        <textarea name="plaintext" rows="3" cols="40">{{ plaintext }}</textarea><br><br>
+{% if result %}
+<hr>
+<h3>Cryptographic Test Results</h3>
+<pre>
+Nonlinearity (NL)          : {{ result.NL }}
+Strict Avalanche (SAC)    : {{ result.SAC }}
+Linear Approx. (LAP)      : {{ result.LAP }}
+Differential Approx. (DAP): {{ result.DAP }}
+Differential Uniformity   : {{ result.DU }}
+Algebraic Degree (AD)     : {{ result.AD }}
+Transparency Order (TO)  : {{ result.TO }}
+Correlation Immunity (CI): {{ result.CI }}
 
-        <label>Key (AES-128):</label><br>
-        <input type="text" name="key" value="{{ key }}"><br><br>
+Ciphertext (hex):
+{{ result.Ciphertext }}
 
-        <button type="submit">Encrypt</button>
-    </form>
+Decrypted Text:
+{{ result.Decrypted }}
+</pre>
+{% endif %}
 
-    {% if ciphertext %}
-        <h3>Hasil Ciphertext</h3>
-        <pre>{{ ciphertext }}</pre>
-    {% endif %}
 </body>
 </html>
