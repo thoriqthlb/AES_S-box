@@ -22,6 +22,8 @@ def index():
         result = {
             "NL": nonlinearity(sbox),
             "SAC": sac(sbox),
+            "BIC-NL": bic_nl(sbox), 
+            "BIC-SAC": bic_sac(sbox),
             "LAP": lap(sbox),
             "DAP": dap(sbox),
             "DU": differential_uniformity(sbox),
