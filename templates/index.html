@@ -2,53 +2,211 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AES S-box Affine Matrix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES-128 Cyberpunk S-box</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        select, input, button { padding: 8px; margin: 5px 0; }
-        pre { background: #f4f4f4; padding: 15px; }
+        .cursor { display: inline-block; width: 10px; background-color: #00ff41; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<h2>AES S-box Affine Matrix Exploration</h2>
+<canvas id="matrix-canvas"></canvas>
 
-<form method="post">
-    <label>Affine Matrix:</label><br>
-    <select name="matrix" required>
-        {% for k in matrices %}
-            <option value="{{ k }}">{{ k }}</option>
-        {% endfor %}
-    </select><br>
+<div class="hero-section">
+    <h1 class="hero-title" id="hero-title-text"></h1> 
+    
+    <div class="hero-subtitle">
+        "This project demonstrates AES-128 encryption using a modified S-Box based on Affine Matrix. 
+        It allows users to analyze cryptographic properties and view the encryption process step-by-step."
+    </div>
 
-    <label>Plaintext:</label><br>
-    <input type="text" name="plaintext" placeholder="Masukkan plaintext" required><br>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fa-solid fa-superscript"></i>
+            <h3>Affine Matrix</h3>
+            <p>Choose different affine matrices to create unique S-Box variations.</p>
+        </div>
 
-    <button type="submit">Generate & Encrypt</button>
-</form>
+        <div class="feature-card">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Analysis</h3>
+            <p>Calculate metrics like Nonlinearity (NL), SAC, and BIC automatically.</p>
+        </div>
 
-{% if result %}
-<hr>
-<h3>Cryptographic Test Results</h3>
-<pre>
-Nonlinearity (NL)          : {{ result.NL }}
-Strict Avalanche (SAC)    : {{ result.SAC }}
-BIC - Nonlinearity        : {{ result['BIC-NL'] }}
-BIC - Strict Avalanche    : {{ result['BIC-SAC'] }}
-Linear Approx. (LAP)      : {{ result.LAP }}
-Differential Approx. (DAP): {{ result.DAP }}
-Differential Uniformity   : {{ result.DU }}
-Algebraic Degree (AD)     : {{ result.AD }}
-Transparency Order (TO)  : {{ result.TO }}
-Correlation Immunity (CI): {{ result.CI }}
+        <div class="feature-card">
+            <i class="fa-solid fa-list-ol"></i>
+            <h3>Round Trace</h3>
+            <p>View the state matrix changes in every AES encryption round.</p>
+        </div>
 
-Ciphertext (hex):
-{{ result.Ciphertext }}
+        <div class="feature-card">
+            <i class="fa-solid fa-file-excel"></i>
+            <h3>Save Data</h3>
+            <p>Download the simulation results and analysis to an Excel file.</p>
+        </div>
+    </div>
 
-Decrypted Text:
-{{ result.Decrypted }}
-</pre>
-{% endif %}
+    <a href="#our-team" class="scroll-btn">OUR TEAM</a>
+</div>
 
+<div class="slider-container" id="our-team">
+    
+    <h2 class="static-team-header" data-text="OUR TEAM">OUR TEAM</h2>
+
+    <div class="hanging-icarus">
+        <div class="string"></div>
+        <div class="knot"></div>
+        <div class="figure">
+            <i class="fa-solid fa-person-falling"></i>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="item">
+            <div class="txt">
+                <div class="name">FAIRUZ TRIDEAS HILMY</div>
+                <div class="des">Starboy<br>Technical Writer</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto1.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">ANTONIO VIANZAR</div>
+                <div class="des">King Backend<br>Lead Programmer</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto2.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">DICKY FARAND AFIYANTO</div>
+                <div class="des">Professional Prompt Engineer<br>UX Researcher<br>UI Designer</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto3.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">THORIQ</div>
+                <div class="des">Backend Engineer<br>Cleon Si Malaikat Maut</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto4.jpg') }}');"></div>
+        </div>
+    </div>
+
+    <div class="button">
+        <button class="prev"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="next"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+</div>
+
+<div class="main-container" id="aes-tool">
+    <h2>AES-128 CALCULATOR</h2> 
+    <form method="post">
+        <label>Select Matrix</label><br>
+        <select name="matrix" required>
+            {% for k in matrices %}
+                <option value="{{ k }}">{{ k }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Input Plaintext</label><br>
+        <input type="text" name="plaintext" placeholder="Type something here..." required><br><br>
+
+        <button type="submit">START ENCRYPTION</button>
+    </form>
+
+    {% if result %}
+    <hr><h3>Analysis Result</h3>
+    
+    <div style="border:1px dashed #ffff00; padding:10px; color:#ffff00; margin-bottom:15px; background:rgba(20,20,0,0.5);">
+        <b>[SUCCESS]:</b> Encryption finished successfully.
+    </div>
+
+    <pre>
+<b>AES Key (Hex):</b>   {{ result.Key }}
+<b>Plaintext:</b>       {{ result.Plaintext }}
+<b>Ciphertext:</b>      {{ result.Ciphertext }}
+<b>Decrypted:</b>       {{ result.Decrypted }}
+
+<b>--- Cryptographic Properties ---</b>
+Nonlinearity (NL)                : {{ result.NL }}
+Strict Avalanche (SAC)           : {{ result.SAC }}
+BIC – Nonlinearity (BIC_NL)      : {{ result.BIC_NL }}
+BIC – Strict Avalanche (BIC_SAC) : {{ result.BIC_SAC }}
+Linear Approximation (LAP)       : {{ result.LAP }}
+Differential Approximation (DAP) : {{ result.DAP }}
+Differential Uniformity (DU)     : {{ result.DU }}
+Algebraic Degree (AD)            : {{ result.AD }}
+Transparency Order (TO)          : {{ result.TO }}
+Correlation Immunity (CI)        : {{ result.CI }}
+    </pre>
+
+    <a href="/download">
+        <button class="download-btn">⬇ DOWNLOAD EXCEL FILE</button>
+    </a>
+
+    <div class="grid-container">
+        <div class="sbox-wrapper">
+            <h3>Forward S-box</h3>
+            <table>
+                <tr><th></th>{% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}</tr>
+                {% for r in range(16) %}
+                <tr><th>{{ "%X"|format(r) }}</th>{% for c in range(16) %}<td>{{ sbox_table[r][c] }}</td>{% endfor %}</tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="sbox-wrapper">
+            <h3>Inverse S-box</h3>
+            <table>
+                <tr><th></th>{% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}</tr>
+                {% for r in range(16) %}
+                <tr><th>{{ "%X"|format(r) }}</th>{% for c in range(16) %}<td>{{ inv_sbox_table[r][c] }}</td>{% endfor %}</tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if enc_trace %}
+    <hr><h3>Encryption Process</h3>
+    <div class="trace-container">
+    {% for r in enc_trace %}
+        <div class="round-box">
+            <h4>Round {{ r.round }}</h4>
+            <div class="step-wrapper">
+            {% for step, state in r.items() if step != "round" %}
+                <div><small>{{ step }}</small><table class="mini-table">{% for row in state %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</table></div>
+            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if dec_trace %}
+    <hr><h3>Decryption Process</h3>
+    <div class="trace-container">
+    {% for r in dec_trace %}
+        <div class="round-box">
+            <h4>Round {{ r.round }}</h4>
+            <div class="step-wrapper">
+            {% for step, state in r.items() if step != "round" %}
+                <div><small>{{ step }}</small><table class="mini-table">{% for row in state %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</table></div>
+            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
