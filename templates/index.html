@@ -2,53 +2,138 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AES-128 Custom S-box (Affine Matrix)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES-128 Cyberpunk S-box</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        h2, h3, h4 { margin-top: 30px; color: #333; }
-        select, input, button { padding: 8px; margin-top: 8px; width: 420px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #0056b3; }
-        table { border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
-        td, th { border: 1px solid #333; padding: 5px; text-align: center; font-family: monospace; min-width: 30px; }
-        th { background-color: #eee; }
-        pre { background: #f4f4f4; padding: 15px; border-left: 5px solid #007bff; overflow-x: auto; }
-        .notice { background: #fff3cd; border: 1px solid #ffeeba; padding: 12px; margin-bottom: 20px; font-size: 14px; }
-        hr { border: 0; border-top: 1px solid #ddd; margin: 40px 0; }
-        .grid-container { display: flex; flex-wrap: wrap; gap: 50px; }
+        .cursor { display: inline-block; width: 10px; background-color: #00ff41; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<h2>AES-128 Custom S-box Using Affine Matrix</h2>
+<canvas id="matrix-canvas"></canvas>
 
-<form method="post">
-    <label><b>Affine Matrix Selection</b></label><br>
-    <select name="matrix" required>
-        {% for k in matrices %}
-            <option value="{{ k }}">{{ k }}</option>
-        {% endfor %}
-    </select><br><br>
+<div class="hero-section">
+    <h1 class="hero-title" id="hero-title-text"></h1> 
+    
+    <div class="hero-subtitle">
+        "This project demonstrates AES-128 encryption using a modified S-Box based on Affine Matrix. 
+        It allows users to analyze cryptographic properties and view the encryption process step-by-step."
+    </div>
 
-    <label><b>Plaintext Input</b></label><br>
-    <input type="text" name="plaintext" placeholder="Enter text to encrypt" required><br><br>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fa-solid fa-superscript"></i>
+            <h3>Affine Matrix</h3>
+            <p>Choose different affine matrices to create unique S-Box variations.</p>
+        </div>
 
-    <button type="submit">Generate, Encrypt & Decrypt</button>
-</form>
+        <div class="feature-card">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Analysis</h3>
+            <p>Calculate metrics like Nonlinearity (NL), SAC, and BIC automatically.</p>
+        </div>
 
-{% if result %}
-<hr>
-<h3>Results & Analysis</h3>
+        <div class="feature-card">
+            <i class="fa-solid fa-list-ol"></i>
+            <h3>Round Trace</h3>
+            <p>View the state matrix changes in every AES encryption round.</p>
+        </div>
 
-<div class="notice">
-    <b>Info:</b> Some hex characters might not be displayable as text. The Excel export handles these cases safely.
+        <div class="feature-card">
+            <i class="fa-solid fa-file-excel"></i>
+            <h3>Save Data</h3>
+            <p>Download the simulation results and analysis to an Excel file.</p>
+        </div>
+    </div>
+
+    <a href="#our-team" class="scroll-btn">OUR TEAM</a>
 </div>
 
-<pre>
-<b>AES Key (Hex):</b> {{ result.Key }}
-<b>Plaintext:</b>   {{ result.Plaintext }}
-<b>Ciphertext:</b>  {{ result.Ciphertext }}
-<b>Decrypted:</b>   {{ result.Decrypted }}
+<div class="slider-container" id="our-team">
+    
+    <h2 class="static-team-header" data-text="OUR TEAM">OUR TEAM</h2>
+
+    <div class="hanging-icarus">
+        <div class="string"></div>
+        <div class="knot"></div>
+        <div class="figure">
+            <i class="fa-solid fa-person-falling"></i>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="item">
+            <div class="txt">
+                <div class="name">FAIRUZ TRIDEAS HILMY</div>
+                <div class="des">Starboy<br>UI Designer</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto1.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">ANTONIO VIANZAR</div>
+                <div class="des">King Backend<br>Lead Programmer</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto2.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">DICKY FARAND AFIYANTO</div>
+                <div class="des">Prompt Engineer<br>UX Researcher</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto3.jpg') }}');"></div>
+        </div>
+
+        <div class="item">
+            <div class="txt">
+                <div class="name">THORIQ</div>
+                <div class="des">Backend Engineer<br>Database Admin</div>
+            </div>
+            <div class="visual" style="background-image: url('{{ url_for('static', filename='foto4.jpg') }}');"></div>
+        </div>
+    </div>
+
+    <div class="button">
+        <button class="prev"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="next"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+</div>
+
+<div class="main-container" id="aes-tool">
+    <h2>AES-128 CALCULATOR</h2> 
+    <form method="post">
+        <label>Select Matrix</label><br>
+        <select name="matrix" required>
+            {% for k in matrices %}
+                <option value="{{ k }}">{{ k }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Input Plaintext</label><br>
+        <input type="text" name="plaintext" placeholder="Type something here..." required><br><br>
+
+        <button type="submit">START ENCRYPTION</button>
+    </form>
+
+    {% if result %}
+    <hr><h3>Analysis Result</h3>
+    
+    <div style="border:1px dashed #ffff00; padding:10px; color:#ffff00; margin-bottom:15px; background:rgba(20,20,0,0.5);">
+        <b>[SUCCESS]:</b> Encryption finished successfully.
+    </div>
+
+    <pre>
+<b>AES Key (Hex):</b>   {{ result.Key }}
+<b>Plaintext:</b>       {{ result.Plaintext }}
+<b>Ciphertext:</b>      {{ result.Ciphertext }}
+<b>Decrypted:</b>       {{ result.Decrypted }}
 
 <b>--- Cryptographic Properties ---</b>
 Nonlinearity (NL)                : {{ result.NL }}
@@ -61,86 +146,67 @@ Differential Uniformity (DU)     : {{ result.DU }}
 Algebraic Degree (AD)            : {{ result.AD }}
 Transparency Order (TO)          : {{ result.TO }}
 Correlation Immunity (CI)        : {{ result.CI }}
-</pre>
+    </pre>
 
-<a href="/download">
-    <button style="background-color: #28a745;">⬇ Download Full Analysis (Excel)</button>
-</a>
+    <a href="/download">
+        <button class="download-btn">⬇ DOWNLOAD EXCEL FILE</button>
+    </a>
 
-<div class="grid-container">
-    <div>
-        <h3>Forward S-box</h3>
-        <table>
-            <tr>
-                <th></th>
-                {% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}
-            </tr>
-            {% for r in range(16) %}
-            <tr>
-                <th>{{ "%X"|format(r) }}</th>
-                {% for c in range(16) %}<td>{{ sbox_table[r][c] }}</td>{% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+    <div class="grid-container">
+        <div class="sbox-wrapper">
+            <h3>Forward S-box</h3>
+            <table>
+                <tr><th></th>{% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}</tr>
+                {% for r in range(16) %}
+                <tr><th>{{ "%X"|format(r) }}</th>{% for c in range(16) %}<td>{{ sbox_table[r][c] }}</td>{% endfor %}</tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="sbox-wrapper">
+            <h3>Inverse S-box</h3>
+            <table>
+                <tr><th></th>{% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}</tr>
+                {% for r in range(16) %}
+                <tr><th>{{ "%X"|format(r) }}</th>{% for c in range(16) %}<td>{{ inv_sbox_table[r][c] }}</td>{% endfor %}</tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
+    {% endif %}
 
-    <div>
-        <h3>Inverse S-box</h3>
-        <table>
-            <tr>
-                <th></th>
-                {% for i in range(16) %}<th>{{ "%X"|format(i) }}</th>{% endfor %}
-            </tr>
-            {% for r in range(16) %}
-            <tr>
-                <th>{{ "%X"|format(r) }}</th>
-                {% for c in range(16) %}<td>{{ inv_sbox_table[r][c] }}</td>{% endfor %}
-            </tr>
+    {% if enc_trace %}
+    <hr><h3>Encryption Process</h3>
+    <div class="trace-container">
+    {% for r in enc_trace %}
+        <div class="round-box">
+            <h4>Round {{ r.round }}</h4>
+            <div class="step-wrapper">
+            {% for step, state in r.items() if step != "round" %}
+                <div><small>{{ step }}</small><table class="mini-table">{% for row in state %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</table></div>
             {% endfor %}
-        </table>
+            </div>
+        </div>
+    {% endfor %}
     </div>
+    {% endif %}
+
+    {% if dec_trace %}
+    <hr><h3>Decryption Process</h3>
+    <div class="trace-container">
+    {% for r in dec_trace %}
+        <div class="round-box">
+            <h4>Round {{ r.round }}</h4>
+            <div class="step-wrapper">
+            {% for step, state in r.items() if step != "round" %}
+                <div><small>{{ step }}</small><table class="mini-table">{% for row in state %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</table></div>
+            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
 </div>
-{% endif %}
 
-{% if enc_trace %}
-<hr>
-<h3>AES Encryption Trace</h3>
-{% for r in enc_trace %}
-    <h4>Round {{ r.round }}</h4>
-    <div style="display: flex; gap: 20px; overflow-x: auto;">
-    {% for step, state in r.items() if step != "round" %}
-        <div>
-            <small><b>{{ step }}</b></small>
-            <table>
-                {% for row in state %}
-                <tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% endfor %}
-    </div>
-{% endfor %}
-{% endif %}
-
-{% if dec_trace %}
-<hr>
-<h3>AES Decryption Trace</h3>
-{% for r in dec_trace %}
-    <h4>Round {{ r.round }}</h4>
-    <div style="display: flex; gap: 20px; overflow-x: auto;">
-    {% for step, state in r.items() if step != "round" %}
-        <div>
-            <small><b>{{ step }}</b></small>
-            <table>
-                {% for row in state %}
-                <tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% endfor %}
-    </div>
-{% endfor %}
-{% endif %}
-
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
