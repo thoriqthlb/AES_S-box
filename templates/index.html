@@ -70,7 +70,7 @@
         <div class="item">
             <div class="txt">
                 <div class="name">FAIRUZ TRIDEAS HILMY</div>
-                <div class="des">Starboy<br>Technical Writer</div>
+                <div class="des">Starboy Kelas Kakap<br>Technical Writer</div>
             </div>
             <div class="visual" style="background-image: url('{{ url_for('static', filename='foto1.jpg') }}');"></div>
         </div>
@@ -86,7 +86,7 @@
         <div class="item">
             <div class="txt">
                 <div class="name">DICKY FARAND AFIYANTO</div>
-                <div class="des">Professional Prompt Engineer<br>UX Researcher<br>UI Designer</div>
+                <div class="des">Professional Prompt Engineer<br>UI/UX Designer</div>
             </div>
             <div class="visual" style="background-image: url('{{ url_for('static', filename='foto3.jpg') }}');"></div>
         </div>
@@ -148,7 +148,7 @@ Transparency Order (TO)          : {{ result.TO }}
 Correlation Immunity (CI)        : {{ result.CI }}
     </pre>
 
-    <a href="/download">
+    <a href="{{ url_for('download_excel', matrix=request.form['matrix'], plaintext=request.form['plaintext']) }}">
         <button class="download-btn">⬇ DOWNLOAD EXCEL FILE</button>
     </a>
 
